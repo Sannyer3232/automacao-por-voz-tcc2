@@ -1,0 +1,18 @@
+{
+    "preferences": {
+        "feedback_voz": true,
+        "tema": "Dark",
+        "iniciar_com_windows": false,
+        "limiar_confianca": 0.5
+    },
+    "paths": {
+        "word": "C:\\Program Files\\Microsoft Office\\root\\Office16\\WINWORD.EXE",
+        "excel": "C:\\Program Files\\Microsoft Office\\root\\Office16\\EXCEL.EXE",
+        "bloco de notas": "notepad.exe",
+        "calculadora": "calc.exe",
+        "spotify": "spotify.exe"
+    },
+    "critical_commands": [
+        "DELETAR_ARQUIVO"
+    ]
+}
