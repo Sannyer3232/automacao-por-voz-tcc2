@@ -1,6 +1,7 @@
+# src/view/main_window.py
 import customtkinter as ctk
 from src.controller.main_controller import AssistantController
-from src.view.config_window import ConfigWindow # <--- Importe a nova classe
+from src.view.config_window import ConfigWindow
 
 ctk.set_appearance_mode("Dark")
 ctk.set_default_color_theme("blue")
@@ -11,7 +12,6 @@ class MainWindow(ctk.CTk):
         self.title("Assistente Virtual TCC - Sannyer")
         self.geometry("600x500")
         
-        # Guarda referência da janela de config para não abrir múltiplas
         self.toplevel_window = None 
 
         # Layout
@@ -22,10 +22,11 @@ class MainWindow(ctk.CTk):
         self.header_frame = ctk.CTkFrame(self)
         self.header_frame.grid(row=0, column=0, padx=20, pady=20, sticky="ew")
         
-        self.label_status = ctk.CTkLabel(self.header_frame, text="Status: Parado", font=("Arial", 16, "bold"))
+        # Label de Status (Começa neutro, mas será atualizado logo em seguida)
+        self.label_status = ctk.CTkLabel(self.header_frame, text="Status: Iniciando...", font=("Arial", 16, "bold"))
         self.label_status.pack(pady=10)
 
-        self.btn_toggle = ctk.CTkButton(self.header_frame, text="Iniciar Escuta", command=self.toggle_listening)
+        self.btn_toggle = ctk.CTkButton(self.header_frame, text="Parar Escuta", command=self.toggle_listening, fg_color="red")
         self.btn_toggle.pack(pady=10)
 
         # Log Area
@@ -37,7 +38,21 @@ class MainWindow(ctk.CTk):
         self.btn_config.grid(row=2, column=0, padx=20, pady=20)
 
         # Controller
-        self.controller = AssistantController(self.update_log)
+        # Passamos self.destroy como callback para fechar a janela quando disser "Encerrar"
+        self.controller = AssistantController(ui_callback_log=self.update_log, app_close_callback=self.fechar_aplicacao)
+
+        # --- AUTO-START (Requisito: Iniciar ouvindo) ---
+        self.after(500, self.auto_start) # Espera 500ms para a janela renderizar antes de iniciar
+
+    def auto_start(self):
+        """Inicia a escuta automaticamente."""
+        self.controller.start_listening()
+        self.label_status.configure(text="Status: Ouvindo...", text_color="green")
+
+    def fechar_aplicacao(self):
+        """Método seguro para fechar a aplicação vindo de outra thread."""
+        self.quit()     # Para o mainloop
+        self.destroy()  # Destrói a janela
 
     def update_log(self, message):
         self.log_box.configure(state="normal")
@@ -56,9 +71,8 @@ class MainWindow(ctk.CTk):
             self.btn_toggle.configure(text="Iniciar Escuta", fg_color="blue")
 
     def open_config(self):
-        # Lógica para abrir a janela apenas se ela não estiver aberta
         if self.toplevel_window is None or not self.toplevel_window.winfo_exists():
-            self.toplevel_window = ConfigWindow(self, self.controller)  # Passa o controller
+            self.toplevel_window = ConfigWindow(self, self.controller)
         else:
             self.toplevel_window.focus()
 

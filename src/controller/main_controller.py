@@ -1,4 +1,6 @@
+# src/controller/main_controller.py
 import threading
+import time
 from src.services.speech_service import SpeechRecognizer
 from src.services.nlp_service import IntentInterpreter
 from src.services.action_service import CommandExecutor
@@ -6,12 +8,14 @@ from src.services.audio_service import AudioFeedback
 from src.model.config_manager import ConfigManager
 
 class AssistantController:
-    def __init__(self, ui_callback_log):
+    def __init__(self, ui_callback_log, app_close_callback=None):
         self.log_callback = ui_callback_log 
+        self.close_callback = app_close_callback # Callback para fechar a janela
+        
         self.config = ConfigManager()
         self.nlp = IntentInterpreter(self.config)
         self.speech = SpeechRecognizer() 
-        self.executor = CommandExecutor()
+        self.executor = CommandExecutor(self.config)
         self.feedback = AudioFeedback()
         
         self.is_running = False
@@ -29,38 +33,50 @@ class AssistantController:
         self.feedback.falar("Configuração atualizada.")
 
     def start_listening(self):
-        # ... (MANTER O CÓDIGO EXISTENTE AQUI) ...
-        # Copie o código do start_listening da resposta anterior
         if self.is_running: return
-        if not self.speech.verificar_status():
-            self.log_callback("ERRO: Microfone não detectado!")
-            return
 
         self.is_running = True
         self.listen_thread = threading.Thread(target=self._loop)
         self.listen_thread.daemon = True
         self.listen_thread.start()
+        
         self.log_callback("Sistema iniciado.")
+        # Feedback de áudio restaurado (RF-1)
+        self.feedback.falar("Sistema iniciado. Aguardando comandos.")
 
     def stop_listening(self):
         self.is_running = False
         self.log_callback("Sistema pausado.")
 
     def _loop(self):
-        # ... (MANTER O CÓDIGO EXISTENTE AQUI) ...
         while self.is_running:
+            # Tenta ouvir. Se não tiver mic, retorna "ERRO_MIC"
             audio_text = self.speech.ouvir_comando()
             
+            # --- Lógica de Espera do Microfone (Loop Resiliente) ---
             if audio_text == "ERRO_MIC":
-                self.log_callback("ALERTA: Microfone desconectado!")
-                self.is_running = False
-                break
+                self.log_callback("AVISO: Microfone desconectado. Aguardando conexão...")
+                time.sleep(3) # Espera 3 segundos antes de tentar de novo
+                # Tenta reconectar o hardware
+                self.speech.verificar_status()
+                continue # Volta para o início do while sem parar o programa
 
             if audio_text:
                 self.log_callback(f"Ouvi: {audio_text}")
                 intent, score = self.nlp.predict(audio_text)
                 
                 if intent:
+                    # --- Lógica de Encerramento (RF-4) ---
+                    if intent == "ENCERRAR":
+                        self.log_callback(f"Intenção: {intent} - Encerrando...")
+                        self.feedback.falar("Encerrando aplicação. Até logo.")
+                        self.is_running = False
+                        time.sleep(1) # Dá tempo de terminar a fala
+                        if self.close_callback:
+                            self.close_callback() # Fecha a janela gráfica
+                        return # Sai da thread
+
+                    # Lógica Normal
                     self.log_callback(f"Intenção: {intent} ({score:.2f})")
                     self.feedback.falar("Entendido")
                     self.executor.executar(intent, audio_text)

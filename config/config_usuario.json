@@ -14,5 +14,19 @@
     },
     "critical_commands": [
         "DELETAR_ARQUIVO"
-    ]
+    ],
+    "custom_actions": {
+        "ABRIR_EMULADOR_PS2": {
+            "type": "programa",
+            "value": "C:\\Users\\user\\Documents\\pcsx2-v2.5.324-windows-x64-Qt\\pcsx2-qt.exe"
+        },
+        "ABRIR_CUP_HEAD": {
+            "type": "programa",
+            "value": "D:\\Games\\Cuphead\\Cuphead.exe"
+        },
+        "ABRI_SQL_SERVER_STUDIO": {
+            "type": "programa",
+            "value": "C:\\Program Files\\Microsoft SQL Server Management Studio 22\\Release\\Common7\\IDE\\SSMS.exe"
+        }
+    }
 }

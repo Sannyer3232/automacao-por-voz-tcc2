@@ -74,6 +74,10 @@ class ConfigManager:
         # Lógica especial para inicialização do Windows (RF-3)
         if key == "iniciar_com_windows":
             self._set_windows_startup(value)
+    def get_paths(self):
+        """Retorna o dicionário de caminhos dos programas."""
+        # Retorna o que está no JSON ou um dicionário vazio se não existir
+        return self.user_config.get("paths", {})
 
     # --- Lógica de Registro do Windows (RF-3) ---
     def _set_windows_startup(self, enable):
@@ -102,3 +106,21 @@ class ConfigManager:
             winreg.CloseKey(key)
         except Exception as e:
             print(f"Erro ao manipular registro do Windows: {e}")
+    def get_custom_actions(self):
+        """Retorna o dicionário de ações customizadas (macros/programas)."""
+        return self.user_config.get("custom_actions", {})
+
+    def add_custom_action(self, intent_name, action_type, action_value):
+        """
+        Salva a lógica da nova ação.
+        type: 'macro' ou 'program'
+        value: 'ctrl+c' ou 'C:/caminho/app.exe'
+        """
+        if "custom_actions" not in self.user_config:
+            self.user_config["custom_actions"] = {}
+        
+        self.user_config["custom_actions"][intent_name] = {
+            "type": action_type,
+            "value": action_value
+        }
+        self.save_json(self.config_path, self.user_config)

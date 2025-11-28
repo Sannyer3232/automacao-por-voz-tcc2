@@ -462,5 +462,65 @@
         "Mudo",
         "Modo silencioso",
         "Voltar o som"
+    ],
+    "ABRIR_EMULADOR_PS2": [
+        "Abrir PS 2",
+        "Abrir Play Station 2",
+        "Abrir Emulador de PS 2",
+        "Abrir PCSX 2"
+    ],
+    "ABRIR_CUP_HEAD": [
+        "Abrir CupHead",
+        "Abra Cup Head",
+        "Executar Cup Head",
+        "Jogar Cup Head Play CupHead"
+    ],
+    "ABRI_SQL_SERVER_STUDIO": [
+        "Abri SQL Server",
+        "Abrir SQL Server",
+        "Executar SQL Server",
+        "Abra SQL Server",
+        "Abrir o SQL Server",
+        "Executar SQL Server Studio"
+    ],
+
+    "MINIMIZAR_JANELA": [
+        "Minimizar janela",
+        "Minimizar",
+        "Esconder janela",
+        "Minimizar a tela",
+        "Abaixar janela"
+    ],
+    "MAXIMIZAR_JANELA": [
+        "Maximizar janela",
+        "Maximizar",
+        "Tela cheia",
+        "Expandir janela",
+        "Aumentar janela"
+    ],
+    "RESTAURAR_JANELA": [
+        "Restaurar janela",
+        "Tamanho normal",
+        "Voltar tamanho",
+        "Desmaximizar"
+    ],
+    "MOSTRAR_DESKTOP": [
+        "Mostrar área de trabalho",
+        "Minimizar tudo",
+        "Ir para o desktop",
+        "Esconder todas as janelas",
+        "Win D"
+    ],
+    "JANELA_ESQUERDA": [
+        "Janela à esquerda",
+        "Colocar à esquerda",
+        "Dividir tela esquerda",
+        "Encaixar esquerda"
+    ],
+    "JANELA_DIREITA": [
+        "Janela à direita",
+        "Colocar à direita",
+        "Dividir tela direita",
+        "Encaixar direita"
     ]
 }
