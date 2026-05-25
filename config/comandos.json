@@ -475,15 +475,6 @@
         "Executar Cup Head",
         "Jogar Cup Head Play CupHead"
     ],
-    "ABRI_SQL_SERVER_STUDIO": [
-        "Abri SQL Server",
-        "Abrir SQL Server",
-        "Executar SQL Server",
-        "Abra SQL Server",
-        "Abrir o SQL Server",
-        "Executar SQL Server Studio"
-    ],
-
     "MINIMIZAR_JANELA": [
         "Minimizar janela",
         "Minimizar",
@@ -522,5 +513,13 @@
         "Colocar à direita",
         "Dividir tela direita",
         "Encaixar direita"
+    ],
+    "ABRI_SQL_SERVER_STUDIO": [
+        "Abri SQL Server",
+        "Abrir SQL Server",
+        "Executar SQL Server",
+        "Abra SQL Server",
+        "Abrir o SQL Server",
+        "Executar SQL Server Studio"
     ]
 }

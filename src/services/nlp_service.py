@@ -75,7 +75,6 @@ class IntentInterpreter:
             return None, 0.0
 
         processed_input = self.preprocess(command_text)
-        
         # Proteção caso o vocabulário do modelo não conheça nenhuma palavra da entrada
         try:
             input_vec = self.vectorizer.transform([processed_input])
@@ -87,8 +86,7 @@ class IntentInterpreter:
 
         # Lógica de similaridade do cosseno
         for intent, phrases in self.intents_map.items():
-            # Otimização: idealmente pré-calcularíamos isso no treino, 
-            # mas para TCC manter assim é didático e funcional para listas pequenas
+
             phrase_vecs = self.vectorizer.transform([self.preprocess(p) for p in phrases])
             similarities = cosine_similarity(input_vec, phrase_vecs)
             max_sim = np.max(similarities)
@@ -97,7 +95,6 @@ class IntentInterpreter:
                 best_score = max_sim
                 best_intent = intent
 
-        # Usa o limiar configurado pelo usuário se disponível
         user_threshold = self.config.get_preference("limiar_confianca")
         if user_threshold is not None:
             threshold = user_threshold
@@ -105,3 +102,4 @@ class IntentInterpreter:
         if best_score >= threshold:
             return best_intent, best_score
         return None, best_score
+    

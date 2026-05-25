@@ -1,0 +1,101 @@
+﻿Comando Falado;Intenção Esperada;Simil. BERTugues;Simil. NLTK
+eu quero abrir o navegador;ABRIR_NAVEGADOR;0,7358;0,7324
+iniciar o google chrome por favor;ABRIR_NAVEGADOR;0,6572;0,6035
+abre a internet ai;ABRIR_NAVEGADOR;0,6609;0,5115
+fechar esse navegador;FECHAR_NAVEGADOR;0,7816;1,0000
+sair do chrome agora;FECHAR_NAVEGADOR;0,7057;0,6831
+encerrar a internet;FECHAR_NAVEGADOR;0,6000;1,0000
+cria uma nova aba;NOVA_GUIA;0,7254;0,7833
+abrir mais uma guia no navegador;NOVA_GUIA;0,6902;0,6009
+fecha essa aba;FECHAR_GUIA;0,7679;1,0000
+sair da guia atual;FECHAR_GUIA;0,7486;0,5249
+vai para a proxima aba;ALTERNAR_GUIA_PROXIMA;0,6050;0,6452
+avancar para guia da direita;ALTERNAR_GUIA_PROXIMA;0,6255;0,4667
+pesquisar no google sobre python;PESQUISAR_GOOGLE;0,6047;0,8392
+busca por inteligencia artificial;PESQUISAR_GOOGLE;0,6658;1,0000
+procurar termo na pagina;PESQUISAR_PAGINA;0,8624;1,0000
+abrir a pasta meus documentos;ABRIR_DOCUMENTOS;0,7405;0,9094
+quero ver meus documentos;ABRIR_DOCUMENTOS;0,6204;0,6035
+iniciar o explorador de arquivos;ABRIR_EXPLORADOR;0,8833;0,7659
+abrir meu computador;ABRIR_EXPLORADOR;0,6538;0,5678
+cria uma nova pasta aqui;CRIAR_PASTA;0,8175;0,8191
+fazer um novo diretorio;CRIAR_PASTA;0,5080;0,7263
+abrir area de trabalho;ABRIR_DESKTOP;0,7427;0,7606
+ver meus icones;ABRIR_DESKTOP;0,6640;0,0000
+mostrar desktop agora;MOSTRAR_DESKTOP;0,5059;0,3901
+ir para o desktop;MOSTRAR_DESKTOP;0,4391;0,0000
+esconder tudo;MOSTRAR_DESKTOP;0,5668;0,4447
+minimizar todas as janelas;MOSTRAR_DESKTOP;0,6375;0,5833
+win d;MOSTRAR_DESKTOP;0,6689;1,0000
+abrir pasta de documentos;ABRIR_DOCUMENTOS;0,7373;0,9094
+acessar arquivos;ABRIR_EXPLORADOR;0,7287;1,0000
+quero digitar um texto;DIGITAR;0,6787;0,6108
+escreve ola mundo;DIGITAR;0,6201;1,0000
+copia isso;COPIAR;0,5720;0,0000
+fazer uma copia do texto;COPIAR;0,7654;0,7071
+cola aqui;COLAR;0,5701;1,0000
+colar o conteudo;COLAR;0,6660;1,0000
+seleciona tudo por favor;SELECIONAR_TUDO;0,6210;1,0000
+marcar o texto todo;SELECIONAR_TUDO;0,6132;0,5596
+quero escrever uma carta;DIGITAR;0,7608;1,0000
+digite para mim;DIGITAR;0,7365;1,0000
+ctrl c;COPIAR;0,8702;1,0000
+copiar selecao;COPIAR;0,6102;1,0000
+colar agora;COLAR;0,6189;1,0000
+ctrl v;COLAR;0,9111;1,0000
+selecionar a pagina toda;SELECIONAR_TUDO;0,7027;0,7592
+abrir o aplicativo do spotify;ABRIR_SPOTIFY;0,6707;0,7319
+quero escutar spotify;ABRIR_SPOTIFY;0,6200;0,6035
+iniciar app de musica;ABRIR_SPOTIFY;0,6525;0,7071
+solta o som;TOCAR_PAUSAR_MUSICA;0,6246;0,0000
+pausa a musica ai;TOCAR_PAUSAR_MUSICA;0,5398;1,0000
+dar play na musica;TOCAR_PAUSAR_MUSICA;0,6130;1,0000
+passar para a proxima;PROXIMA_MUSICA;0,4867;0,0000
+pula essa musica;PROXIMA_MUSICA;0,6156;0,7071
+aumenta esse volume;AUMENTAR_VOLUME;0,7403;1,0000
+som mais alto;AUMENTAR_VOLUME;0,7514;0,4566
+abaixa o som;DIMINUIR_VOLUME;0,6719;0,4566
+volume mais baixo por favor;DIMINUIR_VOLUME;0,5621;0,5724
+fica em silencio;MUTAR_DESMUTAR;0,6789;1,0000
+cortar o som;MUTAR_DESMUTAR;0,5765;0,0000
+volta o som;MUTAR_DESMUTAR;0,6206;0,0000
+quero ouvir musica alta;AUMENTAR_VOLUME;0,6254;0,0000
+parar o barulho;MUTAR_DESMUTAR;0,5677;0,0000
+tocar;TOCAR_PAUSAR_MUSICA;0,7362;0,7303
+proxima faixa;PROXIMA_MUSICA;0,6915;0,7071
+volume maximo;AUMENTAR_VOLUME;0,5755;1,0000
+abrir emulador de ps2;ABRIR_EMULADOR_PS2;0,7894;0,7809
+iniciar o pcsx2 agora;ABRIR_EMULADOR_PS2;0,7476;0,0000
+quero jogar playstation;ABRIR_EMULADOR_PS2;0,6278;0,0000
+jogar cuphead agora;ABRIR_CUP_HEAD;0,7334;0,6170
+iniciar o jogo do xicrinho;ABRIR_CUP_HEAD;0,5097;0,4503
+abrir banco de dados sql;ABRI_SQL_SERVER_STUDIO;0,7300;0,7667
+rodar o management studio;ABRI_SQL_SERVER_STUDIO;0,6143;0,0000
+minimizar essa tela;MINIMIZAR_JANELA;0,6516;0,5833
+esconde a janela;MINIMIZAR_JANELA;0,7485;1,0000
+deixa em tela cheia;MAXIMIZAR_JANELA;0,6755;1,0000
+aumenta a janela;MAXIMIZAR_JANELA;0,7561;0,3229
+coloca a janela na esquerda;JANELA_ESQUERDA;0,7648;1,0000
+joga pra esquerda;JANELA_ESQUERDA;0,5654;0,5397
+janela na direita;JANELA_DIREITA;0,8334;1,0000
+divide a tela na direita;JANELA_DIREITA;0,7614;1,0000
+fechar o programa atual;FECHAR_JANELA_ATUAL;0,7093;1,0000
+sair dessa janela;FECHAR_JANELA_ATUAL;0,6453;0,4176
+abrir o ssms;ABRI_SQL_SERVER_STUDIO;0,6436;0,4191
+jogar cup head;ABRIR_CUP_HEAD;0,7910;1,0000
+abrir emulador;ABRIR_EMULADOR_PS2;0,7596;0,7809
+encerrar aplicação;ENCERRAR;0,6817;1,0000
+sair do sistema;ENCERRAR;0,7228;1,0000
+fechar assistente;ENCERRAR;0,5775;0,5592
+desligar assistente;ENCERRAR;0,6550;0,7071
+parar execução;ENCERRAR;0,6390;0,7071
+tchau;ENCERRAR;0,5471;0,0000
+até logo;ENCERRAR;0,5226;0,0000
+finalizar programa;ENCERRAR;0,7422;0,0000
+encerrar tudo;ENCERRAR;0,6308;0,4935
+sair agora;ENCERRAR;0,6281;1,0000
+fechar o bot;ENCERRAR;0,5897;0,0000
+parar de ouvir;ENCERRAR;0,7690;0,7071
+desligar tudo;ENCERRAR;0,6516;0,0000
+encerrar o assistente;ENCERRAR;0,5932;0,5213
+fechar aplicativo;ENCERRAR;0,5894;0,5830

@@ -1,0 +1,5 @@
+RELATÓRIO DE PERFORMANCE - TCC 2
+================================
+Acurácia: 0.9259
+F1-Score: 0.9235
+Similaridade Média: 0.8760

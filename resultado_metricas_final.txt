@@ -1,0 +1,4 @@
+Acurácia: 0.7100
+F1-Score: 0.7220
+Similaridade: 0.8052
+WER: 0.4933
