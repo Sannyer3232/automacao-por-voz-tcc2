@@ -463,18 +463,6 @@
         "Modo silencioso",
         "Voltar o som"
     ],
-    "ABRIR_EMULADOR_PS2": [
-        "Abrir PS 2",
-        "Abrir Play Station 2",
-        "Abrir Emulador de PS 2",
-        "Abrir PCSX 2"
-    ],
-    "ABRIR_CUP_HEAD": [
-        "Abrir CupHead",
-        "Abra Cup Head",
-        "Executar Cup Head",
-        "Jogar Cup Head Play CupHead"
-    ],
     "MINIMIZAR_JANELA": [
         "Minimizar janela",
         "Minimizar",
@@ -513,13 +501,5 @@
         "Colocar à direita",
         "Dividir tela direita",
         "Encaixar direita"
-    ],
-    "ABRI_SQL_SERVER_STUDIO": [
-        "Abri SQL Server",
-        "Abrir SQL Server",
-        "Executar SQL Server",
-        "Abra SQL Server",
-        "Abrir o SQL Server",
-        "Executar SQL Server Studio"
     ]
 }

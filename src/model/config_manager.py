@@ -1,7 +1,6 @@
 import json
 import os
 import sys
-import winreg # Necessário para mexer no Registro do Windows
 
 class ConfigManager:
     def __init__(self):
@@ -17,7 +16,7 @@ class ConfigManager:
             default_config = {
                 "feedback_voz": True,
                 "tema": "Dark",
-                "iniciar_com_windows": False,
+                "iniciar_com_sistema": False,
                 "limiar_confianca": 0.5
             }
             self.save_json(self.config_path, default_config)
@@ -71,41 +70,46 @@ class ConfigManager:
         self.user_config["preferences"][key] = value
         self.save_json(self.config_path, self.user_config)
 
-        # Lógica especial para inicialização do Windows (RF-3)
-        if key == "iniciar_com_windows":
-            self._set_windows_startup(value)
+        # Lógica especial para inicialização com o sistema (RF-3)
+        if key == "iniciar_com_sistema":
+            self._set_autostart(value)
     def get_paths(self):
         """Retorna o dicionário de caminhos dos programas."""
         # Retorna o que está no JSON ou um dicionário vazio se não existir
         return self.user_config.get("paths", {})
 
-    # --- Lógica de Registro do Windows (RF-3) ---
-    def _set_windows_startup(self, enable):
-        """Adiciona ou remove o script da chave Run do Registro do Windows."""
-        key_path = r"Software\Microsoft\Windows\CurrentVersion\Run"
-        app_name = "TCC_Sannyer_VoiceAssist"
-        
+    # --- Inicialização automática no Linux (RF-3) ---
+    def _set_autostart(self, enable):
+        """Cria ou remove o atalho .desktop em ~/.config/autostart (padrão XDG)."""
+        autostart_dir = os.path.join(
+            os.environ.get("XDG_CONFIG_HOME", os.path.expanduser("~/.config")), "autostart"
+        )
+        desktop_path = os.path.join(autostart_dir, "tcc-sannyer-voiceassist.desktop")
+
         # Caminho para o executável do Python atual e o script main.py
-        # Nota: Isso funciona enquanto você roda o código fonte. 
-        # Se criar um .exe depois, o caminho muda para o próprio .exe.
         python_exe = sys.executable
-        script_path = os.path.abspath("main.py")
-        command = f'"{python_exe}" "{script_path}"'
+        project_dir = os.path.abspath(".")
+        script_path = os.path.join(project_dir, "main.py")
 
         try:
-            key = winreg.OpenKey(winreg.HKEY_CURRENT_USER, key_path, 0, winreg.KEY_ALL_ACCESS)
             if enable:
-                winreg.SetValueEx(key, app_name, 0, winreg.REG_SZ, command)
-                print("Adicionado à inicialização do Windows.")
-            else:
-                try:
-                    winreg.DeleteValue(key, app_name)
-                    print("Removido da inicialização do Windows.")
-                except FileNotFoundError:
-                    pass # Já não existia
-            winreg.CloseKey(key)
+                os.makedirs(autostart_dir, exist_ok=True)
+                with open(desktop_path, "w", encoding="utf-8") as f:
+                    f.write(
+                        "[Desktop Entry]\n"
+                        "Type=Application\n"
+                        "Name=Assistente de Automação por Voz\n"
+                        f'Exec="{python_exe}" "{script_path}"\n'
+                        f"Path={project_dir}\n"
+                        "X-GNOME-Autostart-enabled=true\n"
+                    )
+                print("Adicionado à inicialização do sistema.")
+            elif os.path.exists(desktop_path):
+                os.remove(desktop_path)
+                print("Removido da inicialização do sistema.")
         except Exception as e:
-            print(f"Erro ao manipular registro do Windows: {e}")
+            print(f"Erro ao configurar a inicialização automática: {e}")
+
     def get_custom_actions(self):
         """Retorna o dicionário de ações customizadas (macros/programas)."""
         return self.user_config.get("custom_actions", {})
@@ -114,7 +118,7 @@ class ConfigManager:
         """
         Salva a lógica da nova ação.
         type: 'macro' ou 'program'
-        value: 'ctrl+c' ou 'C:/caminho/app.exe'
+        value: 'ctrl+c' ou '/caminho/para/app' (ou comando do PATH)
         """
         if "custom_actions" not in self.user_config:
             self.user_config["custom_actions"] = {}

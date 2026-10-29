@@ -1,90 +1,97 @@
 # src/services/action_service.py
 import os
+import shlex
+import shutil
+import subprocess
 import webbrowser
-import pyautogui
 import time
+
+from src.services.input_service import KeyboardController
 
 class CommandExecutor:
     def __init__(self, config_manager):
         self.config = config_manager
-        
-        # Carrega os caminhos do JSON. 
+        self.teclado = KeyboardController()
+
+        # Carrega os caminhos do JSON.
         self.comandos_programas = self.config.get_paths()
         self.custom_actions = self.config.get_custom_actions()
 
     def executar(self, intencao, comando_original):
         """Direciona a intenção para a função específica."""
         print(f"Executando ação: {intencao}")
-        
+
         # Recarrega configurações (para pegar alterações no JSON em tempo real)
         self.custom_actions = self.config.get_custom_actions()
         self.comandos_programas = self.config.get_paths()
-        
+
         try:
             # --- NAVEGAÇÃO WEB ---
             if intencao == "ABRIR_NAVEGADOR":
                 webbrowser.open("https://www.google.com")
             elif intencao == "FECHAR_NAVEGADOR":
-                pyautogui.hotkey("alt", "f4")
+                self.teclado.hotkey("alt", "f4")
             elif intencao == "NOVA_GUIA":
-                pyautogui.hotkey("ctrl", "t")
+                self.teclado.hotkey("ctrl", "t")
             elif intencao == "FECHAR_GUIA":
-                pyautogui.hotkey("ctrl", "w")
+                self.teclado.hotkey("ctrl", "w")
             elif intencao == "ALTERNAR_GUIA_PROXIMA":
-                pyautogui.hotkey("ctrl", "tab")
+                self.teclado.hotkey("ctrl", "tab")
             elif intencao == "PESQUISAR_GOOGLE":
                 termo = comando_original.replace("pesquisar sobre", "").replace("buscar por", "").strip()
-                pyautogui.hotkey("ctrl", "l")
+                self.teclado.hotkey("ctrl", "l")
                 time.sleep(0.1)
-                pyautogui.write(termo)
-                pyautogui.press("enter")
-            
+                self.teclado.write(termo)
+                self.teclado.press("enter")
+
             # --- CONTROLE DE TEXTO ---
             elif intencao == "DIGITAR":
                 texto = comando_original.replace("digitar", "").replace("escrever", "").strip()
-                pyautogui.write(texto)
+                self.teclado.write(texto)
             elif intencao == "COPIAR":
-                pyautogui.hotkey("ctrl", "c")
+                self.teclado.hotkey("ctrl", "c")
             elif intencao == "COLAR":
-                pyautogui.hotkey("ctrl", "v")
+                self.teclado.hotkey("ctrl", "v")
             elif intencao == "SELECIONAR_TUDO":
-                pyautogui.hotkey("ctrl", "a")
+                self.teclado.hotkey("ctrl", "a")
             elif intencao == "APAGAR":
-                pyautogui.press("backspace")
+                self.teclado.press("backspace")
             elif intencao == "CONFIRMAR_ENVIO":
-                pyautogui.press("enter")
+                self.teclado.press("enter")
 
             # --- AÇÕES DE SISTEMA / ARQUIVOS ---
             elif intencao == "ABRIR_EXPLORADOR":
-                os.system("explorer.exe")
+                self._abrir_com_xdg(os.path.expanduser("~"))
             elif intencao == "DELETAR_ARQUIVO":
-                pyautogui.press("delete")
+                # No Nautilus, Delete move o arquivo para a lixeira
+                self.teclado.press("delete")
             elif intencao == "CRIAR_PASTA":
-                pyautogui.hotkey("ctrl", "shift", "n")
+                self.teclado.hotkey("ctrl", "shift", "n")
 
             # --- PASTAS DE USUÁRIO ---
+            # As pastas são localizadas via xdg-user-dir (ex: ~/Documentos em pt-BR)
             elif intencao == "ABRIR_DOCUMENTOS":
-                os.startfile(os.path.expanduser("~/Documents"))
+                self._abrir_com_xdg(self._pasta_usuario("DOCUMENTS", "~/Documentos"))
             elif intencao == "ABRIR_DOWNLOADS_PASTA":
-                os.startfile(os.path.expanduser("~/Downloads"))
+                self._abrir_com_xdg(self._pasta_usuario("DOWNLOAD", "~/Downloads"))
             elif intencao == "ABRIR_IMAGENS":
-                os.startfile(os.path.expanduser("~/Pictures"))
+                self._abrir_com_xdg(self._pasta_usuario("PICTURES", "~/Imagens"))
             elif intencao == "ABRIR_DESKTOP":
-                os.startfile(os.path.expanduser("~/Desktop"))
+                self._abrir_com_xdg(self._pasta_usuario("DESKTOP", "~/Área de trabalho"))
 
             # --- AÇÕES DE MÍDIA / VOLUME ---
             elif intencao == "AUMENTAR_VOLUME":
-                pyautogui.press("volumeup")
+                self._volume(["set-volume", "-l", "1.0", "@DEFAULT_AUDIO_SINK@", "5%+"], "volumeup")
             elif intencao == "DIMINUIR_VOLUME":
-                pyautogui.press("volumedown")
+                self._volume(["set-volume", "@DEFAULT_AUDIO_SINK@", "5%-"], "volumedown")
             elif intencao == "MUTAR_DESMUTAR":
-                pyautogui.press("volumemute")
+                self._volume(["set-mute", "@DEFAULT_AUDIO_SINK@", "toggle"], "volumemute")
             elif intencao == "TOCAR_PAUSAR_MUSICA":
-                pyautogui.press("playpause")
+                self._midia("play-pause", "playpause")
             elif intencao == "PROXIMA_MUSICA":
-                pyautogui.press("nexttrack")
+                self._midia("next", "nexttrack")
             elif intencao == "MUSICA_ANTERIOR":
-                pyautogui.press("prevtrack")
+                self._midia("previous", "prevtrack")
 
             # --- ABRIR PROGRAMAS (DINÂMICO) ---
             elif intencao == "ABRIR_BLOCO_DE_NOTAS":
@@ -95,46 +102,37 @@ class CommandExecutor:
                 self._abrir_programa_caminho("word")
             elif intencao == "ABRIR_EXCEL":
                 self._abrir_programa_caminho("excel")
-            
+
             # --- SPOTIFY ---
             elif intencao == "ABRIR_SPOTIFY":
-                try:
-                    os.system("start spotify:") 
-                except:
-                    self._abrir_programa_caminho("spotify")
-            
-            # --- GERENCIAMENTO DE JANELAS (NOVO) ---
+                self._abrir_programa_caminho("spotify")
+
+            # --- GERENCIAMENTO DE JANELAS (atalhos padrão do GNOME) ---
             elif intencao == "FECHAR_JANELA_ATUAL":
-                pyautogui.hotkey("alt", "f4")
-            
+                self.teclado.hotkey("alt", "f4")
+
             elif intencao == "ALTERNAR_JANELA":
-                pyautogui.hotkey("alt", "tab")
+                self.teclado.hotkey("alt", "tab")
             elif intencao == "MINIMIZAR_JANELA":
-                # Pressionar 'win + down' duas vezes garante que minimize 
-                # mesmo se estiver maximizada
-                pyautogui.hotkey("win", "down")
-                time.sleep(0.1)
-                pyautogui.hotkey("win", "down")
-                
+                self.teclado.hotkey("super", "h")
+
             elif intencao == "MAXIMIZAR_JANELA":
-                pyautogui.hotkey("win", "up")
-                
+                self.teclado.hotkey("super", "up")
+
             elif intencao == "RESTAURAR_JANELA":
-                # Restaura tamanho original se estiver maximizada ou minimizada
-                pyautogui.hotkey("win", "down") 
-                # As vezes precisa de win+shift+m dependendo de como foi minimizado, 
-                # mas win+down costuma funcionar para 'desmaximizar'
-                
+                # Desfaz a maximização / encaixe lateral
+                self.teclado.hotkey("super", "down")
+
             elif intencao == "MOSTRAR_DESKTOP":
-                pyautogui.hotkey("win", "d")
+                self.teclado.hotkey("super", "d")
 
             elif intencao == "JANELA_ESQUERDA":
                 # Encaixa a janela na metade esquerda da tela
-                pyautogui.hotkey("win", "left")
-                
+                self.teclado.hotkey("super", "left")
+
             elif intencao == "JANELA_DIREITA":
                 # Encaixa a janela na metade direita da tela
-                pyautogui.hotkey("win", "right")
+                self.teclado.hotkey("super", "right")
 
             # --- AÇÕES PERSONALIZADAS (CUSTOM) ---
             elif intencao in self.custom_actions:
@@ -146,46 +144,72 @@ class CommandExecutor:
 
                 if tipo == "macro":
                     teclas = valor.lower().split("+")
-                    pyautogui.hotkey(*teclas)
-                
+                    self.teclado.hotkey(*teclas)
+
                 elif tipo == "programa":
-                    # Normaliza barras (converte / para \ no Windows)
-                    caminho_exe = os.path.normpath(valor)
-                    
-                    if os.path.exists(caminho_exe):
-                        pasta_do_programa = os.path.dirname(caminho_exe)
-                        nome_exe = os.path.basename(caminho_exe)
-                        
-                        print(f"DEBUG: Arquivo encontrado. Entrando em: {pasta_do_programa}")
-                        try:
-                            # Muda o diretório para a pasta do jogo/app (Crucial para emuladores e jogos)
-                            original_cwd = os.getcwd() 
-                            os.chdir(pasta_do_programa) 
-                            os.startfile(nome_exe)
-                            # Restaura o diretório original do Python (rápido, para não afetar o resto)
-                            time.sleep(0.1) 
-                            os.chdir(original_cwd) 
-                            print("DEBUG: Executado com sucesso.")
-                        except Exception as e:
-                            print(f"ERRO ao tentar abrir com chdir: {e}")
-                            # Fallback: Tenta abrir direto
-                            os.startfile(caminho_exe)
-                    else:
-                        print(f"ERRO: O Python não encontrou o arquivo neste caminho: {caminho_exe}")
-                        print("DICA: Verifique se o caminho está escrito corretamente e se o arquivo .exe existe.")
+                    self._executar_programa(valor)
 
         except Exception as e:
             print(f"Erro CRÍTICO ao executar comando {intencao}: {e}")
 
     def _abrir_programa_caminho(self, nome_chave):
         self.comandos_programas = self.config.get_paths()
-        caminho = self.comandos_programas.get(nome_chave)
-        
-        if caminho and os.path.exists(caminho):
-            os.startfile(caminho)
+        comando = self.comandos_programas.get(nome_chave) or nome_chave
+        self._executar_programa(comando)
+
+    def _executar_programa(self, valor):
+        """
+        Aceita um caminho de executável/AppImage, um arquivo .desktop
+        ou um comando do PATH (com argumentos, ex: 'libreoffice --writer').
+        """
+        caminho = os.path.expanduser(valor)
+
+        if os.path.isfile(caminho):
+            if caminho.endswith(".desktop"):
+                self._iniciar(["gio", "launch", caminho])
+            elif os.access(caminho, os.X_OK):
+                # Executa a partir da pasta do programa (crucial para emuladores e jogos)
+                self._iniciar([caminho], cwd=os.path.dirname(caminho))
+            else:
+                # Arquivo comum: abre com o aplicativo padrão
+                self._abrir_com_xdg(caminho)
+            return
+
+        partes = shlex.split(valor)
+        if partes and shutil.which(partes[0]):
+            self._iniciar(partes)
         else:
-            try:
-                cmd = caminho if caminho else f"{nome_chave}.exe"
-                os.startfile(cmd)
-            except Exception as e:
-                print(f"Falha ao abrir programa '{nome_chave}': {e}")
+            print(f"ERRO: Programa não encontrado: {valor}")
+            print("DICA: Informe um comando do PATH, um arquivo .desktop ou o caminho de um executável.")
+
+    def _iniciar(self, args, cwd=None):
+        # Sessão própria para o programa não morrer junto com o assistente
+        subprocess.Popen(args, cwd=cwd, start_new_session=True,
+                         stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+
+    def _abrir_com_xdg(self, alvo):
+        self._iniciar(["xdg-open", alvo])
+
+    def _pasta_usuario(self, nome_xdg, padrao):
+        try:
+            pasta = subprocess.run(["xdg-user-dir", nome_xdg], capture_output=True,
+                                   text=True, check=True).stdout.strip()
+            if pasta and os.path.isdir(pasta):
+                return pasta
+        except (OSError, subprocess.CalledProcessError):
+            pass
+        return os.path.expanduser(padrao)
+
+    def _volume(self, args_wpctl, tecla_fallback):
+        """Controla o volume via PipeWire (wpctl); sem ele, usa a tecla multimídia."""
+        if shutil.which("wpctl"):
+            subprocess.run(["wpctl", *args_wpctl], check=False)
+        else:
+            self.teclado.press(tecla_fallback)
+
+    def _midia(self, acao_playerctl, tecla_fallback):
+        """Controla players via MPRIS (playerctl); sem ele, usa a tecla multimídia."""
+        if shutil.which("playerctl"):
+            subprocess.run(["playerctl", acao_playerctl], check=False)
+        else:
+            self.teclado.press(tecla_fallback)

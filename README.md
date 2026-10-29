@@ -1,14 +1,16 @@
 # Assistente de Automação por Voz (TCC)
 
-Este projeto é um assistente virtual desktop desenvolvido em Python para automação de tarefas através de comandos de voz. Ele utiliza técnicas de Processamento de Linguagem Natural (NLP) para interpretar intenções e simular ações no sistema operacional Windows.
+Este projeto é um assistente virtual desktop desenvolvido em Python para automação de tarefas através de comandos de voz. Ele utiliza técnicas de Processamento de Linguagem Natural (NLP) para interpretar intenções e simular ações no sistema operacional.
+
+> **Branch `linux`:** esta versão é adaptada para Linux (testada como alvo no Ubuntu com GNOME, em Wayland ou X11). A versão original para Windows está na branch `main`.
 
 ## 🚀 Funcionalidades
 
 - **Controle de Navegador:** Abrir/fechar navegador, gerenciar guias (nova, fechar, alternar), pesquisar no Google, atualizar página e navegação por links.
-- **Automação do Windows:** Abrir explorador de arquivos, documentos, downloads, imagens, calculadora e bloco de notas.
+- **Automação do Sistema:** Abrir o gerenciador de arquivos, documentos, downloads, imagens, calculadora e editor de texto.
 - **Edição de Texto:** Comandos para copiar, colar, recortar, selecionar tudo, apagar e digitar texto por voz.
 - **Controle de Mídia:** Abrir Spotify, play/pause, próxima música, música anterior e controle de volume (aumentar, diminuir, mutar).
-- **Gerenciamento de Janelas:** Minimizar, maximizar, restaurar, alternar janelas (Alt+Tab) e organizar janelas nos cantos da tela.
+- **Gerenciamento de Janelas:** Minimizar, maximizar, restaurar, alternar janelas (Alt+Tab) e encaixar janelas nas laterais da tela (atalhos padrão do GNOME).
 - **Interface Gráfica:** Dashboard moderno construído com `customtkinter` para monitoramento de logs em tempo real e configurações.
 
 ## 🛠️ Tecnologias Utilizadas
@@ -18,7 +20,8 @@ Este projeto é um assistente virtual desktop desenvolvido em Python para automa
 - **Reconhecimento de Voz:** `SpeechRecognition` (Google Web Speech API)
 - **Síntese de Voz (TTS):** `pyttsx3`
 - **Processamento de Linguagem Natural:** `scikit-learn` (TF-IDF + MultinomialNB), `nltk`
-- **Automação de Teclado/Mouse:** `pyautogui`, `pyperclip`
+- **Automação de Teclado:** `ydotool` (Wayland) ou `pyautogui` (X11)
+- **Integração com o sistema:** `xdg-open`, `wpctl` (PipeWire), `playerctl` (opcional), autostart XDG
 
 ## 📂 Estrutura do Projeto
 
@@ -43,29 +46,49 @@ Este projeto é um assistente virtual desktop desenvolvido em Python para automa
    cd automacao-por-voz-tcc2
    ```
 
-2. **Crie e ative um ambiente virtual:**
+2. **Instale as dependências do sistema (Ubuntu/Debian):**
    ```bash
-   python -m venv .venv
-   # No Windows:
-   .venv\Scripts\activate
+   sudo apt install python3-venv python3-tk portaudio19-dev espeak-ng ydotool wl-clipboard xclip playerctl
+   ```
+   - `portaudio19-dev`: necessário para compilar o `pyaudio` (microfone).
+   - `espeak-ng`: motor de voz usado pelo `pyttsx3` no Linux.
+   - `ydotool`: simula o teclado em sessões **Wayland** (padrão do Ubuntu). Em sessões X11 o `pyautogui` é usado automaticamente.
+   - `wl-clipboard` / `xclip`: usados para digitar textos com acento (á, ç, õ...), que são inseridos via área de transferência (Ctrl+V) em Wayland / X11.
+   - `playerctl` (opcional): controle de mídia via MPRIS; sem ele, são usadas as teclas multimídia.
+
+3. **Configure o ydotool (somente Wayland):**
+   O `ydotool` precisa do daemon `ydotoold` rodando e de acesso ao `/dev/uinput`:
+   ```bash
+   sudo usermod -aG input $USER          # depois faça logout/login
+   ydotoold &                            # ou configure como serviço do systemd --user
    ```
 
-3. **Instale as dependências:**
+4. **Crie e ative um ambiente virtual:**
+   ```bash
+   python3 -m venv .venv
+   source .venv/bin/activate
+   ```
+
+5. **Instale as dependências Python:**
    ```bash
    pip install -r requirements.txt
    ```
 
-4. **Execute a aplicação:**
+6. **Execute a aplicação (a partir da raiz do projeto):**
    ```bash
    python main.py
    ```
+
+### Programas e ações personalizadas
+
+Os programas abertos por voz ficam em `config/config_usuario.json`, na seção `paths`. Cada valor pode ser um comando do PATH (ex: `gnome-calculator`, `libreoffice --writer`), um arquivo `.desktop` ou o caminho de um executável/AppImage. O mesmo vale para as ações personalizadas do tipo `programa`. Em macros, use `super` (ou `win`) para a tecla do sistema, ex: `super+d`.
 
 ## ⚙️ Como funciona a interpretação?
 
 O sistema não utiliza apenas comparação de strings exatas. Ele passa por um pipeline de NLP:
 1. **Captação:** O áudio é convertido em texto.
 2. **Processamento:** O texto é limpo e vetorizado.
-3. **Classificação:** Um modelo de Machine Learning treinado com as frases em `config/comandos.json` identifica a intenção (`intent`) com maior probabilidade.
+3. **Classificação:** O texto é vetorizado com TF-IDF (treinado com as frases em `config/comandos.json`) e comparado por similaridade do cosseno; a intenção (`intent`) mais similar acima do limiar de confiança é escolhida.
 4. **Execução:** O serviço de ações executa o comando correspondente à intenção identificada.
 
 ## 📊 Métricas

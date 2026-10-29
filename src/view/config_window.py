@@ -36,11 +36,11 @@ class ConfigWindow(ctk.CTkToplevel):
         if feedback_val: self.switch_feedback.select()
         self.switch_feedback.pack(pady=20, padx=20, anchor="w")
 
-        # --- Switch Iniciar com Windows ---
-        startup_val = self.config_manager.get_preference("iniciar_com_windows")
+        # --- Switch Iniciar com o Sistema ---
+        startup_val = self.config_manager.get_preference("iniciar_com_sistema")
         self.switch_startup = ctk.CTkSwitch(
             self.tab_geral, 
-            text="Iniciar com o Windows",
+            text="Iniciar com o sistema",
             command=self._toggle_startup
         )
         if startup_val: self.switch_startup.select()
@@ -144,16 +144,16 @@ class ConfigWindow(ctk.CTkToplevel):
         
         tipo = self.tipo_acao_var.get()
         if tipo == "programa":
-            self.entry_valor = ctk.CTkEntry(self.frame_valor, placeholder_text="Caminho do .exe")
+            self.entry_valor = ctk.CTkEntry(self.frame_valor, placeholder_text="Caminho do executável, .desktop ou comando")
             self.entry_valor.pack(side="left", fill="x", expand=True, padx=(20, 5))
             btn_busca = ctk.CTkButton(self.frame_valor, text="Buscar...", width=60, command=self._buscar_arquivo)
             btn_busca.pack(side="right", padx=(5, 20))
         else: # macro
-            self.entry_valor = ctk.CTkEntry(self.frame_valor, placeholder_text="Ex: ctrl+c, alt+tab, win+d")
+            self.entry_valor = ctk.CTkEntry(self.frame_valor, placeholder_text="Ex: ctrl+c, alt+tab, super+d")
             self.entry_valor.pack(fill="x", padx=20)
 
     def _buscar_arquivo(self):
-        path = filedialog.askopenfilename(filetypes=[("Executáveis", "*.exe"), ("Todos", "*.*")])
+        path = filedialog.askopenfilename(filetypes=[("Todos", "*"), ("AppImage", "*.AppImage"), ("Atalhos .desktop", "*.desktop")])
         if path:
             self.entry_valor.delete(0, "end")
             self.entry_valor.insert(0, path)
@@ -167,7 +167,7 @@ class ConfigWindow(ctk.CTkToplevel):
 
     def _toggle_startup(self):
         estado = bool(self.switch_startup.get())
-        self.config_manager.set_preference("iniciar_com_windows", estado)
+        self.config_manager.set_preference("iniciar_com_sistema", estado)
 
     # --- Processamento Auxiliar ---
     def _processar_frases(self, texto_bruto):

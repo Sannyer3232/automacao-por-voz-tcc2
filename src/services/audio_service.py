@@ -18,8 +18,20 @@ class AudioFeedback:
 
         try:
             engine = pyttsx3.init()
-            # Configurações opcionais de voz podem vir aqui
+            self._selecionar_voz_portugues(engine)
             engine.say(texto)
             engine.runAndWait()
         except Exception as e:
             print(f"Erro ao sintetizar áudio: {e}")
+
+    def _selecionar_voz_portugues(self, engine):
+        """No Linux o pyttsx3 usa o eSpeak, cuja voz padrão é inglês."""
+        for voz in engine.getProperty("voices"):
+            idiomas = " ".join(
+                l.decode(errors="ignore") if isinstance(l, bytes) else str(l)
+                for l in (voz.languages or [])
+            )
+            identificacao = f"{voz.id} {voz.name} {idiomas}".lower()
+            if "pt-br" in identificacao or "brazil" in identificacao:
+                engine.setProperty("voice", voz.id)
+                return

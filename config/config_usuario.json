@@ -2,31 +2,18 @@
     "preferences": {
         "feedback_voz": true,
         "tema": "Dark",
-        "iniciar_com_windows": false,
+        "iniciar_com_sistema": false,
         "limiar_confianca": 0.5
     },
     "paths": {
-        "word": "C:\\Program Files\\Microsoft Office\\root\\Office16\\WINWORD.EXE",
-        "excel": "C:\\Program Files\\Microsoft Office\\root\\Office16\\EXCEL.EXE",
-        "bloco de notas": "notepad.exe",
-        "calculadora": "calc.exe",
-        "spotify": "spotify.exe"
+        "word": "libreoffice --writer",
+        "excel": "libreoffice --calc",
+        "bloco de notas": "gnome-text-editor",
+        "calculadora": "gnome-calculator",
+        "spotify": "spotify"
     },
     "critical_commands": [
         "DELETAR_ARQUIVO"
     ],
-    "custom_actions": {
-        "ABRIR_EMULADOR_PS2": {
-            "type": "programa",
-            "value": "C:\\Users\\user\\Documents\\pcsx2-v2.5.324-windows-x64-Qt\\pcsx2-qt.exe"
-        },
-        "ABRIR_CUP_HEAD": {
-            "type": "programa",
-            "value": "D:\\Games\\Cuphead\\Cuphead.exe"
-        },
-        "ABRI_SQL_SERVER_STUDIO": {
-            "type": "programa",
-            "value": "C:/Program Files/Microsoft SQL Server Management Studio 22/Release/Common7/IDE/SSMS.exe"
-        }
-    }
+    "custom_actions": {}
 }
