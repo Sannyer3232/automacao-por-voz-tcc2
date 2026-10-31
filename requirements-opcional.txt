@@ -1,5 +1,16 @@
 # Python 3.10 a 3.12
+certifi==2026.10.23
+cffi==2.1.1
+charset-normalizer==3.5.2
+idna==3.20
+pyaudio==0.2.14
+pycparser==3.11
 pyttsx3==2.99
-SpeechRecognition==3.17.0
-PyAudio==0.2.14
+requests==2.34.2
+speechrecognition==3.17.0
+srt==3.5.3
+tqdm==4.70.1
+typing-extensions==4.16.0
+urllib3==2.8.0
 vosk==0.3.45
+websockets==16.1.1
