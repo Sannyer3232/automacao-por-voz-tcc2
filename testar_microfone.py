@@ -15,7 +15,7 @@ sys.path.insert(0, os.path.join(PASTA, "solucao"))
 try:
     import speech_recognition as sr
 except ImportError:
-    print("Instale primeiro: pip install -r requirements-opcional.txt")
+    print("Instale primeiro: pip install -r requirements.txt")
     sys.exit(1)
 
 import voz

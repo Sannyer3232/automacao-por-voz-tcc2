@@ -98,7 +98,7 @@ if modulo_existe("speech_recognition") and modulo_existe("pyaudio"):
     except Exception as e:
         aviso(f"--microfone: não foi possível listar microfones ({e})")
 else:
-    aviso("--microfone indisponível: pip install -r requirements-opcional.txt")
+    aviso("--microfone indisponível: pip install -r requirements.txt (e sudo apt install portaudio19-dev python3-dev build-essential)")
 
 if not modulo_existe("vosk"):
     aviso("vosk não instalado (só faz falta sem internet)")

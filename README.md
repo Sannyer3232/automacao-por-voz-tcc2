@@ -11,20 +11,27 @@ Assistente de comandos em Python para o terminal do Linux. Ele recebe uma frase 
 ## Instalação
 
 ```bash
+sudo apt install python3-venv espeak-ng portaudio19-dev python3-dev build-essential
 git clone -b oficina <url-do-repositorio> assistente-oficina
 cd assistente-oficina
 python3 -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
+python baixar_modelo_vosk.py        # modelo de voz offline em português (~31 MB)
 python verificar_ambiente.py        # TODO 0: tudo verde ou só avisos nos opcionais
 ```
 
-Para os extras de voz (opcional):
+### Pacotes do sistema (`sudo apt install`)
 
-```bash
-sudo apt install espeak-ng portaudio19-dev python3-dev
-pip install -r requirements-opcional.txt
-```
+Esses pacotes são do Ubuntu, não do Python: o `pip` não consegue instalá-los, e o `apt` exige senha de administrador. **Em laboratório, peça para a equipe de TI instalá-los antes da aula.** Sem eles, o `pip install -r requirements.txt` falha por inteiro.
+
+| Pacote | Por que é necessário |
+| --- | --- |
+| `python3-venv` | O Python do Ubuntu não vem com o módulo de ambiente virtual; sem ele, `python3 -m venv .venv` falha |
+| `portaudio19-dev` | O PyAudio (microfone) não tem versão pronta para Linux e é compilado na instalação, usando a PortAudio, biblioteca de áudio do sistema |
+| `python3-dev` | Arquivos de cabeçalho do Python, também usados na compilação do PyAudio |
+| `build-essential` | Compilador `gcc`, necessário para compilar o PyAudio |
+| `espeak-ng` | Motor de síntese de voz: o pyttsx3 só repassa o texto para o eSpeak, que é quem fala |
 
 Na primeira execução, o NLTK baixa os dados `stopwords` e `rslp`, o que precisa de internet uma única vez. Sem internet, rode antes `python -m nltk.downloader stopwords rslp` numa máquina conectada.
 
@@ -139,12 +146,11 @@ A gravação fica salva em `gravacao.wav` (ouça com `aplay gravacao.wav`), o qu
 ### Roteiro do teste no laboratório
 
 1. `python verificar_ambiente.py`: confira a sessão (X11 ou Wayland), a internet e os programas.
-2. `sudo apt install espeak-ng portaudio19-dev python3-dev` e `pip install -r requirements-opcional.txt`.
-3. `python baixar_modelo_vosk.py`.
-4. `python testar_microfone.py --listar` e anote o índice do fone com microfone.
-5. `python testar_microfone.py --mic <índice>` com alguns comandos: compare Google e Vosk.
-6. Desligue a internet e repita: o Vosk deve continuar funcionando (o Google vai mostrar erro de conexão).
-7. `cd solucao && python main.py --microfone --voz --mic <índice>`: teste o assistente completo.
+2. Confira se a instalação do `requirements.txt` e o `python baixar_modelo_vosk.py` rodaram sem erro.
+3. `python testar_microfone.py --listar` e anote o índice do fone com microfone.
+4. `python testar_microfone.py --mic <índice>` com alguns comandos: compare Google e Vosk.
+5. Desligue a internet e repita: o Vosk deve continuar funcionando (o Google vai mostrar erro de conexão).
+6. `cd solucao && python main.py --microfone --voz --mic <índice>`: teste o assistente completo.
 
 ## Problemas comuns
 
@@ -155,7 +161,7 @@ A gravação fica salva em `gravacao.wav` (ouça com `aplay gravacao.wav`), o qu
 - **O Vosk erra muitas palavras:** compare com `python testar_microfone.py`, que mostra também o resultado do Google. Se houver internet, `--reconhecedor google` é um pouco mais preciso.
 - **`--microfone` não ouve:** rode `python testar_microfone.py --listar` e passe o índice certo com `--mic`. Confira também o volume de entrada nas configurações de som do Ubuntu.
 - **"Não ouvi nada" o tempo todo ou cortes no meio da frase:** o ambiente pode estar barulhento. O `testar_microfone.py` mostra o limiar de energia calibrado; acima de ~4000, use fone com microfone ou reduza o ganho.
-- **Falha ao instalar o PyAudio:** faltam `portaudio19-dev` e `python3-dev` (`sudo apt install portaudio19-dev python3-dev`).
+- **Falha ao instalar o PyAudio:** faltam pacotes do sistema (`sudo apt install portaudio19-dev python3-dev build-essential`).
 
 ## Para discutir em aula
 
