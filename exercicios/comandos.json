@@ -1,0 +1,71 @@
+{
+    "limiar": 0.5,
+    "url_busca": "https://duckduckgo.com/?q={termo}",
+    "intencoes": {
+        "abrir_navegador": {
+            "frases": ["abrir o navegador", "abre a internet", "iniciar o firefox", "quero navegar na internet", "abrir o browser"],
+            "acao": {"tipo": "programa", "comando": ["firefox"]},
+            "resposta": "Abrindo o navegador."
+        },
+        "pesquisar": {
+            "frases": ["pesquisar", "buscar", "procurar na internet", "pesquisa sobre", "fazer uma busca", "pesquise", "procura na web"],
+            "acao": {"tipo": "pesquisa", "gatilhos": ["pesquisar", "pesquisa", "pesquise", "buscar", "busca", "busque", "procurar", "procura", "sobre"]},
+            "resposta": "Pesquisando {termo}."
+        },
+        "nova_aba": {
+            "frases": ["abrir nova aba", "cria outra aba", "nova guia", "quero uma aba nova", "abre mais uma aba"],
+            "acao": {"tipo": "atalho", "teclas": ["ctrl", "t"]},
+            "resposta": "Abrindo uma nova aba."
+        },
+        "fechar_aba": {
+            "frases": ["fechar aba", "fecha essa aba", "fechar a guia", "fechar esta aba", "fecha a aba atual"],
+            "acao": {"tipo": "atalho", "teclas": ["ctrl", "w"]},
+            "resposta": "Fechando a aba."
+        },
+        "proxima_aba": {
+            "frases": ["próxima aba", "ir para a aba seguinte", "avançar uma aba", "aba da direita", "próxima guia"],
+            "acao": {"tipo": "atalho", "teclas": ["ctrl", "tab"]},
+            "resposta": "Indo para a próxima aba."
+        },
+        "aba_anterior": {
+            "frases": ["aba anterior", "voltar uma aba", "aba da esquerda", "guia anterior", "volta para a aba de antes"],
+            "acao": {"tipo": "atalho", "teclas": ["ctrl", "shift", "tab"]},
+            "resposta": "Voltando para a aba anterior."
+        },
+        "abrir_editor": {
+            "frases": ["abrir editor de texto", "quero escrever", "abre o bloco de notas", "iniciar editor", "abrir um documento de texto", "escrever um texto"],
+            "acao": {"tipo": "programa", "comando": ["gnome-text-editor"]},
+            "resposta": "Abrindo o editor de texto."
+        },
+        "abrir_calculadora": {
+            "frases": ["abrir calculadora", "preciso fazer uma conta", "abre a calculadora", "quero calcular", "iniciar calculadora"],
+            "acao": {"tipo": "programa", "comando": ["gnome-calculator"]},
+            "resposta": "Abrindo a calculadora."
+        },
+        "abrir_arquivos": {
+            "frases": ["abrir meus arquivos", "mostrar pastas", "abre o gerenciador de arquivos", "ver meus documentos", "abrir pasta pessoal", "ver os arquivos"],
+            "acao": {"tipo": "programa", "comando": ["xdg-open", "~"]},
+            "resposta": "Abrindo seus arquivos."
+        },
+        "aumentar_volume": {
+            "frases": ["aumentar volume", "aumenta o som", "som mais alto", "subir o volume", "mais volume"],
+            "acao": {"tipo": "sistema", "comando": ["pactl", "set-sink-volume", "@DEFAULT_SINK@", "+10%"]},
+            "resposta": "Aumentando o volume."
+        },
+        "diminuir_volume": {
+            "frases": ["diminuir volume", "abaixa o som", "som mais baixo", "baixar o volume", "menos volume"],
+            "acao": {"tipo": "sistema", "comando": ["pactl", "set-sink-volume", "@DEFAULT_SINK@", "-10%"]},
+            "resposta": "Diminuindo o volume."
+        },
+        "ajuda": {
+            "frases": ["ajuda", "o que você sabe fazer", "quais são os comandos", "me ajuda", "lista de comandos", "mostrar os comandos", "o que você pode fazer"],
+            "acao": {"tipo": "interno", "nome": "ajuda"},
+            "resposta": "Estes são os comandos que eu conheço."
+        },
+        "sair": {
+            "frases": ["sair", "encerrar assistente", "tchau", "fechar o programa", "até logo"],
+            "acao": {"tipo": "interno", "nome": "sair"},
+            "resposta": "Até logo!"
+        }
+    }
+}

@@ -1,0 +1,43 @@
+frase,intencao_esperada
+abre o navegador pra mim,abrir_navegador
+quero entrar na internet,abrir_navegador
+inicia o firefox por favor,abrir_navegador
+pesquisar receita de bolo,pesquisar
+buscar notícias de hoje,pesquisar
+procura na internet preço do arroz,pesquisar
+pesquise sobre inteligência artificial,pesquisar
+por favor abre uma aba nova agora,nova_aba
+criar uma nova aba,nova_aba
+mais uma guia por favor,nova_aba
+fecha a aba,fechar_aba
+pode fechar essa guia,fechar_aba
+encerra a aba atual,fechar_aba
+vai para a próxima aba,proxima_aba
+proxima aba,proxima_aba
+avança para a guia seguinte,proxima_aba
+volta pra aba anterior,aba_anterior
+quero a guia da esquerda,aba_anterior
+voltar para a aba de antes,aba_anterior
+abre o editor de textos,abrir_editor
+preciso escrever um texto,abrir_editor
+abrir bloco de notas,abrir_editor
+abre a calculadora aí,abrir_calculadora
+quero fazer uma conta,abrir_calculadora
+calcular,abrir_calculadora
+mostra minhas pastas,abrir_arquivos
+abrir o gerenciador de arquivos,abrir_arquivos
+quero ver meus arquivos,abrir_arquivos
+aumenta o volume,aumentar_volume
+deixa o som mais alto,aumentar_volume
+sobe o volume por favor,aumentar_volume
+abaixa o volume,diminuir_volume
+diminui o som,diminuir_volume
+deixa o som mais baixo,diminuir_volume
+o que você consegue fazer,ajuda
+me mostra os comandos,ajuda
+encerrar,sair
+tchau assistente,sair
+qual a capital da frança,nenhuma
+que horas são,nenhuma
+me conta uma piada,nenhuma
+como está o tempo amanhã,nenhuma

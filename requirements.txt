@@ -1,19 +1,5 @@
-
-SpeechRecognition
-pyttsx3
-pyaudio
-
-
-nltk
-scikit-learn
-joblib
-numpy
-
-
-pyautogui
-pyperclip
-
-
-customtkinter
-pillow
-python-Levenshtein
+# Python 3.10 a 3.12
+nltk==3.10.4
+scikit-learn==1.7.2
+joblib==1.6.0
+pyautogui==0.9.54

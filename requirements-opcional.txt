@@ -1,0 +1,5 @@
+# Python 3.10 a 3.12
+pyttsx3==2.99
+SpeechRecognition==3.17.0
+PyAudio==0.2.14
+vosk==0.3.45
