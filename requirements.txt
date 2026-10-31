@@ -1,4 +1,18 @@
 # Python 3.10 a 3.12
+#
+# IMPORTANTE: antes do pip install, rode no terminal (exige sudo, ou seja, senha de administrador):
+#
+#   sudo apt install python3-venv espeak-ng portaudio19-dev python3-dev build-essential
+#
+# São pacotes do Ubuntu, não do Python, por isso o pip não consegue instalá-los.
+# Sem eles, o ambiente virtual não é criado, o PyAudio (microfone) não compila e
+# a instalação deste arquivo falha por inteiro. Em laboratório, peça para a equipe
+# de TI rodar o comando antes da aula.
+#   - python3-venv: cria o ambiente virtual (python3 -m venv)
+#   - portaudio19-dev, python3-dev, build-essential: compilam o PyAudio
+#   - espeak-ng: motor de voz usado pelo pyttsx3
+#
+# Instalação: pip install -r requirements.txt
 certifi==2026.10.23
 cffi==2.1.1
 charset-normalizer==3.5.2

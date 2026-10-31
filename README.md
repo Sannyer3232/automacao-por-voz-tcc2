@@ -11,7 +11,12 @@ Assistente de comandos em Python para o terminal do Linux. Ele recebe uma frase 
 ## Instalação
 
 ```bash
+# IMPORTANTE: rode este comando ANTES do pip install. Ele instala pacotes do Ubuntu
+# (não do Python) e exige sudo, ou seja, senha de administrador. Sem eles, o venv não
+# é criado, o PyAudio não compila e o pip install -r requirements.txt falha inteiro.
+# Em laboratório, peça para a equipe de TI rodar este comando antes da aula.
 sudo apt install python3-venv espeak-ng portaudio19-dev python3-dev build-essential
+
 git clone -b oficina <url-do-repositorio> assistente-oficina
 cd assistente-oficina
 python3 -m venv .venv
