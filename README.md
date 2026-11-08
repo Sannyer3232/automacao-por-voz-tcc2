@@ -1,12 +1,12 @@
 # Assistente de Comandos — versão oficina
 
-Assistente de comandos em Python para o terminal do Linux. Ele recebe uma frase digitada, identifica a intenção com NLTK + TF-IDF e executa a ação correspondente no computador.
+Assistente de comandos por voz em Python para o terminal do Linux. Ele recebe um comando falado (de um áudio gravado ou do microfone) ou digitado, transcreve a fala com o Vosk, identifica a intenção com NLTK + TF-IDF e executa a ação correspondente no computador.
 
-É o mesmo núcleo de interpretação do TCC *Assistente de Automação por Voz*, sem a interface gráfica. O microfone e a resposta por voz são opcionais. A versão completa do TCC está nas branches `main` (Windows) e `linux`.
+É o mesmo núcleo de interpretação do TCC *Assistente de Automação por Voz*, sem a interface gráfica. A pasta `audios/` traz um comando gravado para cada intenção, então o reconhecimento de voz funciona mesmo em máquinas sem microfone. A versão completa do TCC está nas branches `main` (Windows) e `linux`.
 
-- **Formato:** 2 encontros de 3 h, hands-on. Você completa um código com lacunas (`TODO`) e sai com o assistente funcionando.
-- **Requisitos:** Linux (Ubuntu 22.04 ou 24.04), Python 3.10 a 3.12, noções básicas de Python. Não precisa de GPU, modelo de IA pré-treinado nem chave de API.
-- **Dependências:** versões fixadas em `requirements.txt` (testadas com Python 3.10 e 3.12).
+- **Formato:** 1 encontro de 4 h, hands-on. O instrutor programa no projetor e a turma acompanha, completando as lacunas (`TODO`) do código junto com ele. Todos saem com o assistente funcionando.
+- **Requisitos:** Linux (Ubuntu 22.04 ou 24.04), Python 3.10 a 3.14, noções básicas de Python. Não precisa de GPU, modelo de IA pré-treinado nem chave de API.
+- **Dependências:** versões fixadas em `requirements.txt` (testadas com Python 3.10, 3.12 e 3.14).
 
 ## Instalação
 
@@ -15,7 +15,7 @@ Assistente de comandos em Python para o terminal do Linux. Ele recebe uma frase 
 # (não do Python) e exige sudo, ou seja, senha de administrador. Sem eles, o venv não
 # é criado, o PyAudio não compila e o pip install -r requirements.txt falha inteiro.
 # Em laboratório, peça para a equipe de TI rodar este comando antes da aula.
-sudo apt install python3-venv espeak-ng portaudio19-dev python3-dev build-essential
+sudo apt install python3-venv espeak-ng mbrola mbrola-br4 portaudio19-dev python3-dev build-essential
 
 git clone -b oficina <url-do-repositorio> assistente-oficina
 cd assistente-oficina
@@ -23,7 +23,7 @@ python3 -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
 python baixar_modelo_vosk.py        # modelo de voz offline em português (~31 MB)
-python verificar_ambiente.py        # TODO 0: tudo verde ou só avisos nos opcionais
+python verificar_ambiente.py        # tudo verde ou só avisos nos opcionais
 ```
 
 ### Pacotes do sistema (`sudo apt install`)
@@ -36,7 +36,8 @@ Esses pacotes são do Ubuntu, não do Python: o `pip` não consegue instalá-los
 | `portaudio19-dev` | O PyAudio (microfone) não tem versão pronta para Linux e é compilado na instalação, usando a PortAudio, biblioteca de áudio do sistema |
 | `python3-dev` | Arquivos de cabeçalho do Python, também usados na compilação do PyAudio |
 | `build-essential` | Compilador `gcc`, necessário para compilar o PyAudio |
-| `espeak-ng` | Motor de síntese de voz: o pyttsx3 só repassa o texto para o eSpeak, que é quem fala |
+| `espeak-ng` | Motor de síntese de voz, que transforma as respostas do assistente em fala |
+| `mbrola`, `mbrola-br4` | Voz feminina brasileira, mais natural que a do eSpeak. Sem ela, o assistente usa a variante feminina do eSpeak |
 
 Na primeira execução, o NLTK baixa os dados `stopwords` e `rslp`, o que precisa de internet uma única vez. Sem internet, rode antes `python -m nltk.downloader stopwords rslp` numa máquina conectada.
 
@@ -46,6 +47,7 @@ Na primeira execução, o NLTK baixa os dados `stopwords` e `rslp`, o que precis
 ├── verificar_ambiente.py   # checklist da máquina
 ├── testar_microfone.py     # teste do reconhecimento de voz (microfone -> texto -> intenção)
 ├── baixar_modelo_vosk.py   # baixa o modelo offline em português (~31 MB)
+├── audios/                 # um comando gravado (.wav) por intenção, para testar a voz sem microfone
 ├── exercicios/             # código com as lacunas TODO: é aqui que você trabalha
 └── solucao/                # mesmo código, completo
 ```
@@ -58,7 +60,7 @@ As duas pastas têm os mesmos arquivos:
 | `preprocessamento.py` | Minúsculas, tokenização, stopwords e stemming (RSLP) |
 | `classificador.py` | TF-IDF + similaridade do cosseno, com limiar de confiança |
 | `acoes.py` | Executa a ação no Linux (programa, atalho, pesquisa, sistema) |
-| `voz.py` | Opcional: falar (pyttsx3) e ouvir (SpeechRecognition) |
+| `voz.py` | Falar (eSpeak + MBROLA) e ouvir um áudio gravado ou o microfone (SpeechRecognition + Vosk) |
 | `avaliar.py` | Acurácia, F1 macro e matriz de confusão em `testes.csv` |
 | `main.py` | Laço principal |
 
@@ -69,27 +71,36 @@ cd exercicios
 python main.py --simular     # mostra as ações em vez de executá-las
 python main.py               # executa de verdade
 python main.py --voz         # fala as respostas
+python main.py --audio ../audios --simular   # ouve todos os comandos gravados, em ordem
+python main.py --audio ../audios/03_pesquisar.wav   # ouve um comando gravado
 python main.py --microfone   # ouve pelo microfone (volta para o teclado se falhar)
 python main.py --microfone --mic 3 --reconhecedor google   # escolhe o microfone e o reconhecedor
 python main.py --limiar 0.3  # muda o score mínimo para aceitar um comando
 python avaliar.py            # mede o classificador
 ```
 
-## Roteiro
+## Roteiro (4 h, programando juntos)
 
-| Dia | TODO | Arquivo | O que fazer | Como conferir |
+Cada TODO segue o mesmo ritmo: o instrutor explica o conceito, escreve o código no projetor, a turma digita junto e todos conferem o resultado antes de seguir.
+
+| Horário | Etapa | Arquivo | O que fazer | Como conferir |
 | --- | --- | --- | --- | --- |
-| 1 | 0 | `verificar_ambiente.py` | Rodar o diagnóstico da máquina | tudo verde ou só avisos nos opcionais |
-| 1 | 1 | `preprocessamento.py` | Minúsculas, remoção de pontuação e tokenização | `python preprocessamento.py` |
-| 1 | 2 | `preprocessamento.py` | Remoção de stopwords | "por favor abre aba agora" vira `['abr', 'aba']` |
-| 1 | 3 | `preprocessamento.py` | Stemming com `RSLPStemmer` | "abrir", "abre" e "abrindo" viram `abr` |
-| 1 | 4 | `classificador.py` | `prever()`: vetorizar, calcular o cosseno, aplicar o limiar | `python classificador.py` mostra intenção e score |
-| 1 | 5 | `avaliar.py` | Calcular as métricas e testar os limiares 0,3 / 0,5 / 0,7 | comparar com o 0,94 do TCC |
-| 2 | 6 | `acoes.py` | Implementar os tipos `programa` e `atalho` | `nova aba` abre uma aba no Firefox (ou mostra a simulação) |
-| 2 | 7 | `comandos.json` | Desafio: criar 2 intenções novas, com frases e ação | `ajuda` lista as novas e `avaliar.py` continua passando |
-| 2 | 8 (extra) | `voz.py` | Ligar `--voz` e, se houver microfone, `--microfone` | o assistente fala e ouve |
+| 0:00 – 0:15 | Abertura | `verificar_ambiente.py` | Apresentação e diagnóstico da máquina | tudo verde ou só avisos nos opcionais |
+| 0:15 – 0:30 | Demonstração | `solucao/` | Ver o assistente completo funcionando e entender o fluxo frase → intenção → ação | — |
+| 0:30 – 1:10 | TODO 1 | `preprocessamento.py` | Minúsculas, remoção de pontuação e tokenização | `python preprocessamento.py` |
+| | TODO 2 | `preprocessamento.py` | Remoção de stopwords | "por favor abre aba agora" vira `['abr', 'aba']` |
+| | TODO 3 | `preprocessamento.py` | Stemming com `RSLPStemmer` | "abrir", "abre" e "abrindo" viram `abr` |
+| 1:10 – 1:40 | TODO 4 | `classificador.py` | `prever()`: vetorizar, calcular o cosseno, aplicar o limiar | `python classificador.py` mostra intenção e score |
+| 1:40 – 2:00 | TODO 5 | `avaliar.py` | Calcular as métricas e testar os limiares 0,3 / 0,5 / 0,7 | comparar com o 0,94 do TCC |
+| 2:00 – 2:15 | Intervalo | | | |
+| 2:15 – 2:45 | TODO 6 | `acoes.py` | Implementar os tipos `programa` e `atalho` | `nova aba` abre uma aba no Firefox (ou mostra a simulação) |
+| 2:45 – 3:20 | TODO 7 | `comandos.json` | Criar uma intenção nova juntos e, em seguida, cada um cria a sua | `ajuda` lista as novas e `avaliar.py` continua passando |
+| 3:20 – 3:45 | TODO 8 | `voz.py` | 8a: falar (`--voz`). 8b: transcrever os áudios gravados (`--audio ../audios`). 8c (extra): microfone | o assistente fala e entende os 14 áudios |
+| 3:45 – 4:00 | Fechamento | — | Discutir os limites do TF-IDF (veja "Para discutir em aula") | — |
 
 **Ficou para trás?** Copie o arquivo correspondente de `solucao/` para `exercicios/` e siga com a turma.
+
+**Se o tempo apertar:** no TODO 7, faça só a intenção em conjunto. No TODO 8, faça o 8a e o 8b e mostre o microfone no projetor.
 
 ## Criando comandos (TODO 7)
 
@@ -135,6 +146,25 @@ Baixe o modelo do Vosk uma vez, com internet (na raiz do projeto):
 python baixar_modelo_vosk.py
 ```
 
+### Áudios gravados (sem microfone)
+
+A pasta `audios/` tem um comando gravado para cada intenção (WAV, 16 kHz, mono), numerado na ordem da demonstração. O `13_fora_do_dominio.wav` deve ser rejeitado, e o `14_sair.wav` encerra o assistente.
+
+```bash
+cd solucao
+python main.py --audio ../audios --simular                 # todos os áudios, em ordem
+python main.py --audio ../audios/02_nova_aba.wav --voz     # um áudio, com resposta falada
+python main.py --audio ../audios --reconhecedor google     # compara com o Google (precisa de internet)
+```
+
+Com o Vosk, os 14 áudios caem na intenção certa. Alguns saem com pequenos erros de transcrição ("abri a calculadora", "a baixa o volume"), e mesmo assim o classificador acerta. Isso rende uma boa discussão em aula.
+
+Os áudios da pasta foram gerados por síntese de voz. Para trocar por gravações suas (ou da turma), grave em WAV 16 kHz mono e mantenha o número no início do nome:
+
+```bash
+arecord -f S16_LE -r 16000 -c 1 -d 4 audios/15_minha_frase.wav
+```
+
 ### Testando o microfone
 
 O `testar_microfone.py` mostra cada etapa: calibração do ruído, gravação, transcrição pelos dois motores (com o tempo de cada um) e a intenção identificada.
@@ -163,6 +193,7 @@ A gravação fica salva em `gravacao.wav` (ouça com `aplay gravacao.wav`), o qu
 - **"Programa não encontrado":** ajuste o `comando` da intenção no `comandos.json` para um programa instalado (ex: `gedit` no lugar de `gnome-text-editor`).
 - **O volume não muda ("'pactl' não encontrado"):** instale com `sudo apt install pulseaudio-utils` ou troque, no `comandos.json`, para o `wpctl` do PipeWire: `["wpctl", "set-volume", "@DEFAULT_AUDIO_SINK@", "10%+"]` (e `"10%-"` para diminuir).
 - **`--voz` não fala:** instale o `espeak-ng`. Sem ele, o assistente avisa e segue só com texto.
+- **A voz saiu robótica/masculina:** falta a voz MBROLA (`sudo apt install mbrola mbrola-br4`). Teste com `espeak-ng -v mb-br4 -s 150 "Abrindo o navegador."`. Para mudar a velocidade, altere `VELOCIDADE` no `voz.py`.
 - **O Vosk erra muitas palavras:** compare com `python testar_microfone.py`, que mostra também o resultado do Google. Se houver internet, `--reconhecedor google` é um pouco mais preciso.
 - **`--microfone` não ouve:** rode `python testar_microfone.py --listar` e passe o índice certo com `--mic`. Confira também o volume de entrada nas configurações de som do Ubuntu.
 - **"Não ouvi nada" o tempo todo ou cortes no meio da frase:** o ambiente pode estar barulhento. O `testar_microfone.py` mostra o limiar de energia calibrado; acima de ~4000, use fone com microfone ou reduza o ganho.

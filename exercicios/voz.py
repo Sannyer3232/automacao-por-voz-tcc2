@@ -1,11 +1,9 @@
-# voz.py — opcional: falar (pyttsx3 + espeak-ng) e ouvir (SpeechRecognition + Vosk offline ou Google)
+# voz.py — falar (espeak-ng + MBROLA) e ouvir um áudio gravado ou o microfone
+# (SpeechRecognition + Vosk offline ou Google)
 import json
 import os
-
-try:
-    import pyttsx3
-except ImportError:
-    pyttsx3 = None
+import shutil
+import subprocess
 
 try:
     import speech_recognition as sr
@@ -18,29 +16,25 @@ try:
 except ImportError:
     vosk = None
 
+# Voz feminina brasileira do MBROLA (br4). Sem ela, usa a variante feminina do eSpeak.
+VOZ_MBROLA = "mb-br4"
+VOZ_RESERVA = "pt-br+f3"
+VELOCIDADE = 150  # palavras por minuto (o padrão do eSpeak é 175)
+
 # Modelo Vosk em português, baixado com: python baixar_modelo_vosk.py
 PASTA_MODELO_VOSK = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "modelo-vosk")
 
-_motor = None
 _voz_indisponivel = False
 _reconhecedor = None
 _modelo_vosk = None
 _avisou_google = False
 
 
-def _iniciar_motor():
-    """Cria o motor de voz uma vez e escolhe uma voz em português."""
-    global _motor
-    if _motor is None:
-        _motor = pyttsx3.init()
-        vozes = {f"{v.id} {v.name}".lower(): v.id for v in _motor.getProperty("voices")}
-        # Prefere português do Brasil; senão, qualquer português
-        for trecho in ("pt-br", "brazil", "portug"):
-            escolhida = next((vid for nome, vid in vozes.items() if trecho in nome), None)
-            if escolhida:
-                _motor.setProperty("voice", escolhida)
-                break
-    return _motor
+def escolher_voz():
+    """MBROLA br4 se estiver instalada (sudo apt install mbrola mbrola-br4); senão, eSpeak feminina."""
+    if shutil.which("mbrola") and os.path.isdir("/usr/share/mbrola/br4"):
+        return VOZ_MBROLA
+    return VOZ_RESERVA
 
 
 def falar(texto):
@@ -48,20 +42,14 @@ def falar(texto):
     global _voz_indisponivel
     if _voz_indisponivel:
         return False
-    if pyttsx3 is None:
-        print("  (voz indisponível: instale o pyttsx3. Seguindo só com texto.)")
+    if shutil.which("espeak-ng") is None:
+        print("  (voz indisponível: sudo apt install espeak-ng. Seguindo só com texto.)")
         _voz_indisponivel = True
         return False
-    try:
-        # TODO 8a: pegue o motor com _iniciar_motor(), chame motor.say(texto)
-        # e motor.runAndWait(), e devolva True.
-        raise NotImplementedError("TODO 8a: implemente falar() em voz.py")
-    except NotImplementedError:
-        raise
-    except Exception as erro:
-        print(f"  (voz indisponível: {erro}. Instale o espeak-ng. Seguindo só com texto.)")
-        _voz_indisponivel = True
-        return False
+    # TODO 8a: monte a lista
+    #   comando = ["espeak-ng", "-v", escolher_voz(), "-s", str(VELOCIDADE), "-a", "80", texto]
+    # rode com subprocess.run(comando, stderr=subprocess.DEVNULL) e devolva True.
+    raise NotImplementedError("TODO 8a: implemente falar() em voz.py")
 
 
 def _obter_reconhecedor(mic):
@@ -97,9 +85,9 @@ def ouvir(mic=None, motor="auto"):
         reconhecedor = _obter_reconhecedor(mic)
         with sr.Microphone(device_index=mic) as fonte:
             print("  🎤 Pode falar...")
-            # TODO 8b: ouça com reconhecedor.listen(fonte, timeout=5, phrase_time_limit=6)
+            # TODO 8c (extra, se houver microfone): ouça com reconhecedor.listen(fonte, timeout=5, phrase_time_limit=6)
             # e guarde o resultado na variável 'audio'.
-            raise NotImplementedError("TODO 8b: implemente ouvir() em voz.py")
+            raise NotImplementedError("TODO 8c: implemente ouvir() em voz.py")
     except NotImplementedError:
         raise
     except sr.WaitTimeoutError:
@@ -107,6 +95,24 @@ def ouvir(mic=None, motor="auto"):
         return None
     except Exception as erro:
         print(f"  (microfone indisponível: {erro})")
+        return None
+    return reconhecer(audio, motor)
+
+
+def ouvir_arquivo(caminho, motor="auto"):
+    """Transcreve um áudio gravado (.wav), sem precisar de microfone."""
+    if sr is None:
+        print("  (reconhecimento indisponível: instale SpeechRecognition)")
+        return None
+    try:
+        with sr.AudioFile(caminho) as fonte:
+            # TODO 8b: leia o áudio inteiro com sr.Recognizer().record(fonte)
+            # e guarde o resultado na variável 'audio'.
+            raise NotImplementedError("TODO 8b: implemente ouvir_arquivo() em voz.py")
+    except NotImplementedError:
+        raise
+    except Exception as erro:
+        print(f"  (não foi possível ler {caminho}: {erro})")
         return None
     return reconhecer(audio, motor)
 

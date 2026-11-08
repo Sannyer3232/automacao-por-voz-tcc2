@@ -1,4 +1,4 @@
-# verificar_ambiente.py — checklist da máquina (TODO 0: rode no início da aula)
+# verificar_ambiente.py — checklist da máquina (rode no início da aula)
 import importlib
 import json
 import os
@@ -82,13 +82,16 @@ try:
 except OSError:
     aviso("sem internet: a pesquisa web e o reconhecimento do Google não vão funcionar")
 
-print("\nOpcional (voz)")
-try:
-    import pyttsx3
-    pyttsx3.init()  # falha se não houver o eSpeak no sistema
-    ok("pyttsx3 + eSpeak (--voz)")
-except Exception:
-    aviso("--voz indisponível: pip install pyttsx3 e sudo apt install espeak-ng")
+print("\nVoz")
+if not shutil.which("espeak-ng"):
+    aviso("--voz indisponível: sudo apt install espeak-ng mbrola mbrola-br4")
+elif shutil.which("mbrola") and os.path.isdir("/usr/share/mbrola/br4"):
+    ok("voz feminina MBROLA br4 (--voz)")
+else:
+    aviso("MBROLA br4 ausente: --voz usa a voz do eSpeak (sudo apt install mbrola mbrola-br4)")
+
+if os.path.isdir(os.path.join(pasta, "audios")):
+    ok("áudios gravados em audios/ (--audio, sem microfone)")
 
 if modulo_existe("speech_recognition") and modulo_existe("pyaudio"):
     import speech_recognition as sr
